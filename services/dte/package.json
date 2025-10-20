@@ -1,0 +1,37 @@
+{
+  "name": "@atomic/dte",
+  "version": "1.0.0",
+  "description": "Deterministic Transform Engine for AST-based code transformations",
+  "main": "dist/index.js",
+  "bin": {
+    "atomic-dte": "./dist/cli.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf dist",
+    "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
+    "start": "node dist/index.js",
+    "test": "jest",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@atomic/types": "1.0.0",
+    "@atomic/schemas": "1.0.0",
+    "@atomic/utils": "1.0.0",
+    "ts-morph": "^21.0.1",
+    "jscodeshift": "^0.15.1",
+    "express": "^4.18.2",
+    "glob": "^10.3.10",
+    "commander": "^11.1.0",
+    "dotenv": "^16.3.1"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/jest": "^29.5.8",
+    "@types/jscodeshift": "^0.11.10",
+    "@types/node": "^20.10.0",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.1.1",
+    "ts-node-dev": "^2.0.0"
+  }
+}

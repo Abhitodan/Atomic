@@ -1,0 +1,45 @@
+{
+  "id": "CS-001",
+  "intent": "Rename UserId → AccountId and replace auth.login(v1) → auth.signIn(v2)",
+  "scope": ["examples/demo-repo/src"],
+  "language": "typescript",
+  "patches": [
+    {
+      "path": "examples/demo-repo/src/types.ts",
+      "astOp": "renameSymbol",
+      "selector": "Identifier[name='UserId']",
+      "details": {
+        "newName": "AccountId"
+      }
+    },
+    {
+      "path": "examples/demo-repo/src/**/*.ts",
+      "astOp": "replaceAPI",
+      "selector": "CallExpression[callee.object.name='auth'][callee.property.name='login']",
+      "details": {
+        "newProperty": "signIn",
+        "argsMap": {
+          "username": "email"
+        }
+      }
+    }
+  ],
+  "invariants": [
+    {
+      "name": "TypeCheckAll",
+      "type": "typecheck",
+      "spec": "tsc --noEmit"
+    },
+    {
+      "name": "AuthAPICompat",
+      "type": "semanticRule",
+      "spec": "No calls to auth.login remain; all calls compile"
+    }
+  ],
+  "tests": {
+    "strategy": "augment",
+    "targets": ["examples/demo-repo/src"],
+    "mutationThreshold": 0.6
+  },
+  "risk": "medium"
+}

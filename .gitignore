@@ -1,0 +1,68 @@
+# Dependencies
+node_modules/
+vendor/
+__pycache__/
+*.pyc
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Build outputs
+dist/
+build/
+out/
+target/
+bin/
+obj/
+
+# IDE
+.vscode/*
+!.vscode/extensions.json
+!.vscode/launch.json
+!.vscode/tasks.json
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Environment
+.env
+.env.local
+.env.*.local
+*.log
+
+# Testing
+coverage/
+.nyc_output/
+*.lcov
+.coverage
+.pytest_cache/
+.stryker-tmp/
+reports/
+
+# Temporary
+tmp/
+temp/
+*.tmp
+.cache/
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Agents directory (private instructions)
+.github/agents/

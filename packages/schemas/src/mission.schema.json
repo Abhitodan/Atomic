@@ -1,0 +1,100 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Mission",
+  "description": "Checkpointed workflow for executing and verifying code changes",
+  "type": "object",
+  "required": ["missionId", "title", "risk", "checkpoints"],
+  "properties": {
+    "missionId": {
+      "type": "string",
+      "description": "Unique mission identifier",
+      "pattern": "^M-[0-9]+$"
+    },
+    "title": {
+      "type": "string",
+      "description": "Mission title"
+    },
+    "risk": {
+      "type": "string",
+      "description": "Overall risk level",
+      "enum": ["low", "medium", "high"]
+    },
+    "checkpoints": {
+      "type": "array",
+      "description": "Sequential checkpoints in the mission workflow",
+      "items": {
+        "type": "object",
+        "required": ["name", "status"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Checkpoint name",
+            "enum": ["plan", "execute", "verify", "finalize"]
+          },
+          "status": {
+            "type": "string",
+            "description": "Checkpoint status",
+            "enum": ["pending", "approved", "rejected", "completed"]
+          },
+          "actor": {
+            "type": "string",
+            "description": "Who can act on this checkpoint",
+            "enum": ["human", "agent", "both"]
+          },
+          "artifacts": {
+            "type": "array",
+            "description": "Paths to checkpoint artifacts",
+            "items": {
+              "type": "string"
+            }
+          },
+          "batches": {
+            "type": "array",
+            "description": "Execution batches for the execute checkpoint",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "reversible": {
+                  "type": "boolean"
+                },
+                "prs": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "metrics": {
+            "type": "object",
+            "description": "Verification metrics",
+            "properties": {
+              "testsAdded": {
+                "type": "integer"
+              },
+              "mutationScore": {
+                "type": "number"
+              }
+            }
+          },
+          "auditPack": {
+            "type": "string",
+            "description": "Path to audit pack for finalize checkpoint"
+          }
+        }
+      }
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "updatedAt": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+}

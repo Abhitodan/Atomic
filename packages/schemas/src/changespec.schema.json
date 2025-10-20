@@ -1,0 +1,130 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ChangeSpec",
+  "description": "Specification for a deterministic code change with AST patches, invariants, and tests",
+  "type": "object",
+  "required": ["id", "intent", "scope", "language", "patches", "invariants", "tests"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Unique identifier for this ChangeSpec",
+      "pattern": "^CS-[0-9]+$"
+    },
+    "intent": {
+      "type": "string",
+      "description": "Human-readable description of the intended change"
+    },
+    "scope": {
+      "type": "array",
+      "description": "File paths or glob patterns defining the scope of changes",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1
+    },
+    "language": {
+      "type": "string",
+      "description": "Primary programming language for this change",
+      "enum": ["typescript", "javascript", "python", "java"]
+    },
+    "assumptions": {
+      "type": "array",
+      "description": "Explicit assumptions made during planning",
+      "items": {
+        "type": "string"
+      }
+    },
+    "patches": {
+      "type": "array",
+      "description": "AST-level operations to apply",
+      "items": {
+        "type": "object",
+        "required": ["path", "astOp", "details"],
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "File path or glob pattern for files to patch"
+          },
+          "astOp": {
+            "type": "string",
+            "description": "Type of AST operation to perform",
+            "enum": [
+              "renameSymbol",
+              "moveModule",
+              "replaceAPI",
+              "insertNode",
+              "deleteNode",
+              "editString",
+              "editRegex"
+            ]
+          },
+          "selector": {
+            "type": "string",
+            "description": "AST query selector (e.g., jscodeshift/tsquery syntax)"
+          },
+          "details": {
+            "type": "object",
+            "description": "Operation-specific details"
+          }
+        }
+      }
+    },
+    "invariants": {
+      "type": "array",
+      "description": "Constraints that must hold after applying patches",
+      "items": {
+        "type": "object",
+        "required": ["name", "type", "spec"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Invariant name"
+          },
+          "type": {
+            "type": "string",
+            "description": "Type of invariant check",
+            "enum": ["typecheck", "symbolExists", "apiCompat", "regex", "semanticRule"]
+          },
+          "spec": {
+            "type": "string",
+            "description": "Invariant specification (command, pattern, or rule)"
+          }
+        }
+      }
+    },
+    "tests": {
+      "type": "object",
+      "description": "Testing strategy for this change",
+      "required": ["strategy", "targets", "mutationThreshold"],
+      "properties": {
+        "strategy": {
+          "type": "string",
+          "description": "Test generation strategy",
+          "enum": ["augment", "generate", "hybrid"]
+        },
+        "targets": {
+          "type": "array",
+          "description": "Paths to test",
+          "items": {
+            "type": "string"
+          }
+        },
+        "mutationThreshold": {
+          "type": "number",
+          "description": "Minimum mutation score (0.0-1.0)",
+          "minimum": 0,
+          "maximum": 1
+        }
+      }
+    },
+    "risk": {
+      "type": "string",
+      "description": "Risk assessment",
+      "enum": ["low", "medium", "high"]
+    },
+    "telemetry": {
+      "type": "object",
+      "description": "Optional telemetry metadata"
+    }
+  }
+}

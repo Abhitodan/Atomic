@@ -1,0 +1,29 @@
+{
+  "name": "@atomic/cli",
+  "version": "1.0.0",
+  "description": "Atomic CLI for managing missions and ChangeSpecs",
+  "bin": {
+    "atomic": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc && chmod +x dist/index.js",
+    "clean": "rm -rf dist",
+    "dev": "ts-node src/index.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@atomic/types": "1.0.0",
+    "@atomic/schemas": "1.0.0",
+    "@atomic/utils": "1.0.0",
+    "commander": "^11.1.0",
+    "chalk": "^4.1.2",
+    "inquirer": "^8.2.6",
+    "axios": "^1.6.2",
+    "dotenv": "^16.3.1"
+  },
+  "devDependencies": {
+    "@types/inquirer": "^9.0.7",
+    "@types/node": "^20.10.0",
+    "ts-node": "^10.9.2"
+  }
+}

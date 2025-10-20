@@ -1,0 +1,41 @@
+name: 'Atomic Audit Pack'
+description: 'Generate and upload audit pack for mission'
+branding:
+  icon: 'archive'
+  color: 'blue'
+
+inputs:
+  mission-id:
+    description: 'Mission ID'
+    required: true
+  evidence-url:
+    description: 'URL of Evidence service'
+    required: false
+    default: 'http://localhost:3005'
+
+outputs:
+  audit-pack-path:
+    description: 'Path to generated audit pack'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Generate Audit Pack
+      shell: bash
+      id: generate
+      run: |
+        echo "Generating audit pack for mission ${{ inputs.mission-id }}"
+        
+        # In a real implementation, this would call the evidence service
+        # curl -X POST ${{ inputs.evidence-url }}/evidence/export \
+        #   -H "Content-Type: application/json" \
+        #   -d '{"missionId": "${{ inputs.mission-id }}"}'
+        
+        echo "audit-pack-path=/tmp/audit-pack-${{ inputs.mission-id }}.zip" >> $GITHUB_OUTPUT
+
+    - name: Upload Audit Pack
+      uses: actions/upload-artifact@v3
+      with:
+        name: audit-pack-${{ inputs.mission-id }}
+        path: /tmp/audit-pack-${{ inputs.mission-id }}.zip
+        retention-days: 90
