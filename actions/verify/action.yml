@@ -1,0 +1,68 @@
+name: 'Atomic Verify'
+description: 'Verify ChangeSpec with invariants and mutation testing'
+branding:
+  icon: 'check-circle'
+  color: 'green'
+
+inputs:
+  spec:
+    description: 'Path to ChangeSpec JSON file'
+    required: true
+    default: 'specs/changespec.json'
+  fail-on-error:
+    description: 'Fail the build if verification fails'
+    required: false
+    default: 'true'
+  dte-url:
+    description: 'URL of DTE service'
+    required: false
+    default: 'http://localhost:3003'
+
+outputs:
+  success:
+    description: 'Whether verification passed'
+  mutation-score:
+    description: 'Mutation testing score'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Install Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+
+    - name: Install Atomic CLI
+      shell: bash
+      run: |
+        npm install -g @atomic/cli || echo "Using local CLI"
+
+    - name: Verify ChangeSpec
+      shell: bash
+      id: verify
+      run: |
+        if [ -f "${{ inputs.spec }}" ]; then
+          atomic dte verify --spec "${{ inputs.spec }}" --ci || exit_code=$?
+          
+          if [ "$exit_code" != "0" ] && [ "${{ inputs.fail-on-error }}" == "true" ]; then
+            echo "Verification failed"
+            exit 1
+          fi
+          
+          echo "success=true" >> $GITHUB_OUTPUT
+        else
+          echo "ChangeSpec file not found: ${{ inputs.spec }}"
+          exit 1
+        fi
+
+    - name: Comment PR
+      if: github.event_name == 'pull_request'
+      uses: actions/github-script@v7
+      with:
+        script: |
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: '✅ Atomic verification completed'
+          })

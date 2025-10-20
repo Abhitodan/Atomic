@@ -1,0 +1,37 @@
+name: Atomic Verify PR
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'examples/**'
+      - 'specs/**'
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    name: Verify ChangeSpec
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Atomic Verify
+        uses: ./actions/verify
+        with:
+          spec: examples/specs/CS-001.json
+          fail-on-error: true
+
+      - name: Generate Audit Pack
+        if: success()
+        uses: ./actions/audit-pack
+        with:
+          mission-id: test-mission

@@ -1,0 +1,12 @@
+{
+  "name": "@atomic/types",
+  "version": "1.0.0",
+  "description": "TypeScript types for Atomic platform",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf dist",
+    "typecheck": "tsc --noEmit"
+  }
+}

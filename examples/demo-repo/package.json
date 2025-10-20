@@ -1,0 +1,12 @@
+{
+  "name": "demo-repo",
+  "version": "1.0.0",
+  "description": "Demo repository for Atomic transformations",
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.2"
+  }
+}
