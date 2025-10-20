@@ -1,0 +1,60 @@
+name: Atomic Governance Check
+
+on:
+  pull_request:
+    branches: [main, master]
+  push:
+    branches: [main, master]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  atomic-governance:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          
+      - name: Install Atomic
+        run: |
+          npm install -g @atomic/governance || npm install
+          
+      - name: Initialize Atomic
+        run: atomic init
+        
+      - name: Scan for secrets and PII
+        id: scan
+        run: |
+          atomic scan -f $(git diff --name-only HEAD~1 HEAD | grep -E '\.(ts|js|py|java)$' || echo "*.ts") > scan-results.txt
+          cat scan-results.txt
+          
+      - name: Check budget compliance
+        run: |
+          atomic budget --status --id default || echo "No budget configured"
+          
+      - name: Generate audit report
+        if: always()
+        run: |
+          atomic audit -c latest -o audit-report.json || echo "No checkpoint found"
+          
+      - name: Upload audit report
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: atomic-audit-report
+          path: audit-report.json
+          
+      - name: Block on critical findings
+        run: |
+          if grep -q "CRITICAL" scan-results.txt; then
+            echo "::error::Critical security findings detected. Merge blocked."
+            exit 1
+          fi
