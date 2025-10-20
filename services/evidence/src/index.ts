@@ -115,8 +115,8 @@ app.post('/evidence/export', async (req, res) => {
     await archive.finalize();
 
     // Wait for stream to finish
-    await new Promise((resolve, reject) => {
-      output.on('close', resolve);
+    await new Promise<void>((resolve, reject) => {
+      output.on('close', () => resolve());
       output.on('error', reject);
     });
 

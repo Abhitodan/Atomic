@@ -40,18 +40,23 @@ export class SecretRedactor {
   redact(content: string): { sanitized: string; redactions: Redaction[] } {
     let sanitized = content;
     const redactions: Redaction[] = [];
+    let offset = 0;
 
     for (const pattern of this.patterns) {
-      const matches = content.matchAll(new RegExp(pattern.source, pattern.flags));
+      // Reset lastIndex for global regex
+      pattern.lastIndex = 0;
+      
+      const matches = Array.from(content.matchAll(pattern));
+      
       for (const match of matches) {
         if (match.index !== undefined && match[0]) {
-          const position = match.index;
+          const position = match.index + offset;
           const length = match[0].length;
           const placeholder = '***REDACTED_SECRET***';
 
           redactions.push({
             type: 'secret',
-            position,
+            position: match.index,
             length,
             placeholder,
           });
@@ -61,6 +66,9 @@ export class SecretRedactor {
             sanitized.slice(0, position) +
             placeholder +
             sanitized.slice(position + length);
+          
+          // Update offset for subsequent replacements
+          offset += placeholder.length - length;
         }
       }
     }
@@ -69,7 +77,10 @@ export class SecretRedactor {
   }
 
   scan(content: string): boolean {
-    return this.patterns.some((pattern) => pattern.test(content));
+    return this.patterns.some((pattern) => {
+      pattern.lastIndex = 0;
+      return pattern.test(content);
+    });
   }
 }
 
@@ -83,18 +94,22 @@ export class PIIRedactor {
   redact(content: string): { sanitized: string; redactions: Redaction[] } {
     let sanitized = content;
     const redactions: Redaction[] = [];
+    let offset = 0;
 
     for (const pattern of this.patterns) {
-      const matches = content.matchAll(new RegExp(pattern.source, pattern.flags));
+      pattern.lastIndex = 0;
+      
+      const matches = Array.from(content.matchAll(pattern));
+      
       for (const match of matches) {
         if (match.index !== undefined && match[0]) {
-          const position = match.index;
+          const position = match.index + offset;
           const length = match[0].length;
           const placeholder = '***REDACTED_PII***';
 
           redactions.push({
             type: 'pii',
-            position,
+            position: match.index,
             length,
             placeholder,
           });
@@ -103,6 +118,8 @@ export class PIIRedactor {
             sanitized.slice(0, position) +
             placeholder +
             sanitized.slice(position + length);
+          
+          offset += placeholder.length - length;
         }
       }
     }
@@ -111,7 +128,10 @@ export class PIIRedactor {
   }
 
   scan(content: string): boolean {
-    return this.patterns.some((pattern) => pattern.test(content));
+    return this.patterns.some((pattern) => {
+      pattern.lastIndex = 0;
+      return pattern.test(content);
+    });
   }
 }
 
