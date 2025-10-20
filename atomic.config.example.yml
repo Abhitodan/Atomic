@@ -1,0 +1,128 @@
+# Atomic Configuration Example
+# This file shows all available configuration options
+
+# Project Metadata
+project:
+  name: "my-project"
+  version: "1.0.0"
+
+# Budget Configuration
+budgets:
+  - id: "dev-team"
+    maxCost: 500
+    alertThreshold: 80
+    models:
+      - modelId: "gpt-3.5-turbo"
+        priority: 1
+        maxCost: 100
+        maxTokens: 100000
+      - modelId: "gpt-4"
+        priority: 2
+        maxCost: 400
+        maxTokens: 50000
+
+# Security Policies
+security:
+  policies:
+    # Secret Detection
+    - id: "aws-keys"
+      enabled: true
+      action: "block"
+      severity: "critical"
+    
+    - id: "private-keys"
+      enabled: true
+      action: "block"
+      severity: "critical"
+    
+    - id: "api-keys"
+      enabled: true
+      action: "redact"
+      severity: "high"
+    
+    # PII Detection
+    - id: "email"
+      enabled: true
+      action: "redact"
+      severity: "medium"
+    
+    - id: "credit-card"
+      enabled: true
+      action: "block"
+      severity: "high"
+    
+    - id: "ssn"
+      enabled: true
+      action: "block"
+      severity: "high"
+    
+    # Optional
+    - id: "ip-address"
+      enabled: false
+      action: "warn"
+      severity: "low"
+  
+  # Custom patterns
+  customPatterns:
+    - id: "internal-token"
+      name: "Internal Token"
+      type: "secret"
+      patterns:
+        - "INT_[A-Z0-9]{32}"
+      action: "block"
+      severity: "critical"
+
+# Checkpoint Configuration
+checkpoints:
+  defaultReversible: true
+  autoSnapshot: true
+  retentionDays: 30
+
+# Evidence Store
+evidence:
+  storePath: ".atomic/evidence"
+  retentionDays: 90
+  enableSigning: false  # Requires cryptographic setup
+
+# Model Pricing (override defaults)
+pricing:
+  - modelId: "gpt-4"
+    inputTokenCost: 0.03
+    outputTokenCost: 0.06
+  
+  - modelId: "gpt-3.5-turbo"
+    inputTokenCost: 0.0015
+    outputTokenCost: 0.002
+
+# Language Support
+languages:
+  typescript:
+    enabled: true
+    extensions: [".ts", ".tsx"]
+  
+  javascript:
+    enabled: true
+    extensions: [".js", ".jsx"]
+  
+  python:
+    enabled: true
+    extensions: [".py"]
+    # Note: Python support is currently limited
+  
+  java:
+    enabled: true
+    extensions: [".java"]
+    # Note: Java support is partial
+
+# GitHub Actions Integration
+github:
+  enableChecks: true
+  blockOnCritical: true
+  commentOnPR: true
+  uploadArtifacts: true
+
+# CLI Defaults
+cli:
+  verbose: false
+  color: true
+  interactive: false
